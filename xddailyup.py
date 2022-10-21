@@ -41,7 +41,6 @@
 GNU General Public License v3.0 (gpl-3.0)
 '''
 
-from asyncio.windows_events import NULL
 from datetime import datetime
 from getopt import getopt
 from random import randint
@@ -105,7 +104,7 @@ NORTH_UPLOAD_MSG={
     "geo_api_info": "{\"type\":\"complete\",\"info\":\"SUCCESS\",\"status\":1,\"VDa\":\"jsonp_324977_\","
                     "\"position\":{\"Q\":34.23254,\"R\":108.91516000000001,\"lng\":108.91802,\"lat\":34.23231},"
                     "\"message\":\"Get ipLocation success.Get address success.\",\"location_type\":\"ip\","
-                    "\"accuracy\":null,\"isConverted\":true,\"addressComponent\":{\"citycode\":\"029\","
+                    "\"accuracy\":None,\"isConverted\":true,\"addressComponent\":{\"citycode\":\"029\","
                     "\"adcode\":\"610113\",\"businessAreas\":[],\"neighborhoodType\":\"\",\"neighborhood\":\"\","
                     "\"building\":\"\",\"buildingType\":\"\",\"street\":\"白沙路\",\"streetNumber\":\"238号\","
                     "\"country\":\"中国\",\"province\":\"陕西省\",\"city\":\"西安市\",\"district\":\"雁塔区\","
@@ -271,7 +270,7 @@ def checkTime(time_lib):
 conn=Session()
 logined=0
 for i in range(3):
-    result=NULL
+    result=None
     try :
         result=conn.post(url="https://xxcapp.xidian.edu.cn/uc/wap/login/check",data={"username":USERNAME,"password":PASSWORD},verify=not DEBUG)
         if result.json()['e']==0:
@@ -287,7 +286,7 @@ if not logined:
 
 # 上报晨午晚检
 def dailyUp():
-    result=NULL
+    result=None
     try:
         result=conn.post(url="https://xxcapp.xidian.edu.cn/xisuncov/wap/open-report/save",data=currentUploadMsg,verify=not DEBUG)
         if result.json()['e']==0:
