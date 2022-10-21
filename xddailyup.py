@@ -42,6 +42,9 @@ PASSWORD=""
 # 上报地址，默认为南校区
 MSGCONFIG=1 # 0：北校区，1：南校区，2：广州研究院 (测试)，3：杭州研究院 (预留)，4：备用(出差)
 
+# 调试用，不懂勿动
+NOTDEBUG=True
+
 # ------------------------------------------------ #
 
 from asyncio.windows_events import NULL
@@ -232,7 +235,7 @@ logined=0
 for i in range(3):
     result=NULL
     try :
-        result=conn.post(url="https://xxcapp.xidian.edu.cn/uc/wap/login/check",data={"username":USERNAME,"password":PASSWORD},verify=False)
+        result=conn.post(url="https://xxcapp.xidian.edu.cn/uc/wap/login/check",data={"username":USERNAME,"password":PASSWORD},verify=NOTDEBUG)
         if result.json()['e']==0:
             logined=1
             print("登录成功")
@@ -248,7 +251,7 @@ if not logined:
 def dailyUp():
     result=NULL
     try:
-        result=conn.post(url="https://xxcapp.xidian.edu.cn/xisuncov/wap/open-report/save",data=currentUploadMsg,verify=False)
+        result=conn.post(url="https://xxcapp.xidian.edu.cn/xisuncov/wap/open-report/save",data=currentUploadMsg,verify=NOTDEBUG)
         if result.json()['e']==0:
             print("上报成功")
             return 1
