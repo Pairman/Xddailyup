@@ -1,21 +1,32 @@
 '''
-# Author
+# 西安电子科技大学晨午晚检自动上报工具
+
+# 作者
 
 [Pairman](https://github.com/Pairman)
 
-# Disclaimer
+# 免责信息
 
 本程序仅供学习交流使用，使用本程序造成的任何后果由用户自行负责。
 
-# Dependencies
+# 依赖
 
 ```Python>=3``` , ```requests```
 
-# Usage
+# 用法
 
-将本程序( ```.py``` )下载到本地，在用户配置修改区域填入自己的学号、密码及上报地址，保持运行本程序，本程序将自动在相应时段上报晨午晚检。
+```
+用法：
+    python3 xddailyup.py [参数]
+参数：
+    -h,--help                   输出帮助信息
+    -u,--username <学号>        指定学号
+    -p,--password <密码>        指定密码
+    -l,--location <上报地址>    指定上报地址（格式：某国某省某市某县/区）
+    -d,--debug                  进入调试模式
+```
 
-# Credits
+# 致谢
 
 [使用Github Aciton自动填写疫情通](https://cnblogs.com/soowin/p/13461451.html)
 
@@ -25,33 +36,60 @@
 
 [西安电子科技大学晨午晚检自动上报工具](https://github.com/cunzao/ncov)
 
-# Lisense
+# 开源协议
 
 GNU General Public License v3.0 (gpl-3.0)
-
 '''
 
-# ------------------------------------------------ #
-
-# 用户配置修改区域
-
-# 登录学号和密码。修改以登录自己的账户
-USERNAME=""
-PASSWORD=""
-
-# 上报地址，默认为南校区
-MSGCONFIG=1 # 0：北校区，1：南校区，2：广州研究院 (测试)，3：杭州研究院 (预留)，4：备用(出差)
-
-# 调试用，不懂勿动
-NOTDEBUG=True
-
-# ------------------------------------------------ #
-
 from asyncio.windows_events import NULL
-import datetime
-import random
-import requests
-import time
+from datetime import datetime
+from getopt import getopt
+from random import randint
+from requests import Session
+from sys import argv
+from time import sleep
+
+opts=getopt(argv[1:],"hu:p:l:d",["help","username=","password=","location=","debug"])[0]
+
+USERNAME,PASSWORD,LOCATION,DEBUG="","",1,False
+
+helpMsg="""Xddailyup - 西安电子科技大学晨午晚检自动上报工具 2.1 (2022 Oct 21, Pairman)
+本程序仅供学习交流使用，使用本程序造成的任何后果由用户自行负责。
+用法：
+    python3 %s [参数]
+参数：
+    -h,--help                   输出帮助信息
+    -u,--username <学号>        指定学号
+    -p,--password <密码>        指定密码
+    -l,--location <上报地址>    指定上报地址（0：北校区，1：南校区，2：广州研究院 (测试)，3：杭州研究院 (预留)，4：备用(出差)，默认为1）
+    -d,--debug                  进入调试模式
+"""%(argv[0])
+
+if len(argv)==1:
+    print(helpMsg)
+    exit()
+
+for opt,arg in opts:
+    if opt in ("-h","--help"):
+        print(helpMsg)
+        exit()
+    if opt in ("-u","--username"):
+        USERNAME=arg
+    if opt in ("-p","--password"):
+        PASSWORD=arg
+    if opt in ("-l","--location"):
+        LOCATION=arg
+    if opt in ("-d","--debug"):
+        DEBUG=1
+
+print("本程序仅供学习交流使用，使用本程序造成的任何后果由用户自行负责。")
+
+if USERNAME=="":
+    print("请指定学号！")
+    exit()
+if PASSWORD=="":
+    print("请指定密码！")
+    exit()
 
 # 上报信息表
 
@@ -181,14 +219,14 @@ BAK_UPLOAD_MSG={
 
 # 上报哪个信息
 uploadMsgs=[NORTH_UPLOAD_MSG,SOUTH_UPLOAD_MSG,GZ_UPLOAD_MSG,HZ_UPLOAD_MSG,BAK_UPLOAD_MSG]
-currentUploadMsg=uploadMsgs[MSGCONFIG]
+currentUploadMsg=uploadMsgs[LOCATION]
 
 # 定义程序上报的时间，初始值为 7:15，12:05，18:10
 time_lib=[7,15,12,5,18,10]
 
 # 获取当前时间
 def getCurrentTime():
-    currentTime=datetime.datetime.now()
+    currentTime=datetime.now()
     hour=int(str(currentTime)[11:13])
     minute=int(str(currentTime)[14:16])
     second=int(str(currentTime)[17:19])
@@ -198,9 +236,9 @@ def getCurrentTime():
 def updateTimeLib(time_lib):
     assert len(time_lib)==6
     new_time=time_lib
-    new_time[1]=random.randint(2,59)
-    new_time[3]=random.randint(2,59)
-    new_time[5]=random.randint(2,59)
+    new_time[1]=randint(2,59)
+    new_time[3]=randint(2,59)
+    new_time[5]=randint(2,59)
     print("更新晨午晚检上报时间成功！下一天自动上报的时间为:")
     print("晨检%02d时%02d分，午检%02d时%02d分，晚检%02d时%02d分" % tuple(new_time))
     return new_time
@@ -229,15 +267,13 @@ def checkTime(time_lib):
         print("当前系统时间 %02d:%02d:%02d"%(currentHour,currentMinute,currentSecond))
     return currentState
 
-print("晨午晚检自动上报")
-
 # 登录
-conn=requests.Session()
+conn=Session()
 logined=0
 for i in range(3):
     result=NULL
     try :
-        result=conn.post(url="https://xxcapp.xidian.edu.cn/uc/wap/login/check",data={"username":USERNAME,"password":PASSWORD},verify=NOTDEBUG)
+        result=conn.post(url="https://xxcapp.xidian.edu.cn/uc/wap/login/check",data={"username":USERNAME,"password":PASSWORD},verify=not DEBUG)
         if result.json()['e']==0:
             logined=1
             print("登录成功")
@@ -253,7 +289,7 @@ if not logined:
 def dailyUp():
     result=NULL
     try:
-        result=conn.post(url="https://xxcapp.xidian.edu.cn/xisuncov/wap/open-report/save",data=currentUploadMsg,verify=NOTDEBUG)
+        result=conn.post(url="https://xxcapp.xidian.edu.cn/xisuncov/wap/open-report/save",data=currentUploadMsg,verify=not DEBUG)
         if result.json()['e']==0:
             print("上报成功")
             return 1
@@ -273,22 +309,22 @@ while True:
     # 晨、午、晚上报，上报失败则重试两次
     if currentState in (1,2,3):
         if dailyUp()==0:
-            time.sleep(90)
+            sleep(90)
             if dailyUp()==0:
-                time.sleep(180)
+                sleep(180)
                 if dailyUp()==0:
                     print("连续三次上报失败")
     # 上报结束后冷却时间
-        time.sleep(180)
+        sleep(180)
     elif currentState==4:
         # 每天23点55分，更新下一天上报的随机时刻
         time_lib=updateTimeLib(time_lib)
         print("程序夜间进入休眠")
         # 夜间暂停6小时
-        time.sleep(6*60*60)
+        sleep(6*60*60)
         print("早上好")
     elif currentState==5:
         # 整点报时
-        time.sleep(60)
+        sleep(60)
     else:
-        time.sleep(30)
+        sleep(30)
