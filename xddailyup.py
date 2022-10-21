@@ -229,6 +229,8 @@ def checkTime(time_lib):
         print("当前系统时间 %02d:%02d:%02d"%(currentHour,currentMinute,currentSecond))
     return currentState
 
+print("晨午晚检自动上报")
+
 # 登录
 conn=requests.Session()
 logined=0
