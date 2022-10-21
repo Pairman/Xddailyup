@@ -1,20 +1,31 @@
-# Author
+# 西安电子科技大学晨午晚检自动上报工具
+
+# 作者
 
 [Pairman](https://github.com/Pairman)
 
-# Disclaimer
+# 免责信息
 
 本程序仅供学习交流使用，使用本程序造成的任何后果由用户自行负责。
 
-# Dependencies
+# 依赖
 
 ```Python>=3``` , ```requests```
 
-# Usage
+# 用法
 
-将本程序( ```.py``` )下载到本地，在用户配置修改区域填入自己的学号、密码及上报地址，保持运行本程序，本程序将自动在相应时段上报晨午晚检。
+```
+用法：
+    python3 xddailyup.py [参数]
+参数：
+    -h,--help                   输出帮助信息
+    -u,--username <学号>        指定学号
+    -p,--password <密码>        指定密码
+    -l,--location <上报地址>    指定上报地址（格式：某国某省某市某县/区）
+    -d,--debug                  进入调试模式
+```
 
-# Credits
+# 致谢
 
 [使用Github Aciton自动填写疫情通](https://cnblogs.com/soowin/p/13461451.html)
 
@@ -24,6 +35,6 @@
 
 [西安电子科技大学晨午晚检自动上报工具](https://github.com/cunzao/ncov)
 
-# Lisense
+# 开源协议
 
 GNU General Public License v3.0 (gpl-3.0)
