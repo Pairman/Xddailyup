@@ -268,13 +268,13 @@ def checkTime(time_lib):
 
 # 登录
 conn=Session()
-logined=0
+logined=False
 for i in range(3):
     result=None
     try :
         result=conn.post(url="https://xxcapp.xidian.edu.cn/uc/wap/login/check",data={"username":USERNAME,"password":PASSWORD},verify=not DEBUG)
         if result.json()['e']==0:
-            logined=1
+            logined=True
             print("登录成功")
             break
         print("登录失败：",result.json()['m'])
