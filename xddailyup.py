@@ -247,7 +247,7 @@ def dailyUp():
     result=None
     for i in range(3):
         try:
-            result=conn.post(url="https://xxcapp.xidian.edu.cn/ncov/wap/default/save",data=currentUploadMsg,verify=not DEBUG)
+            result=conn.post(url="https://xxcapp.xidian.edu.cn/xisuncov/wap/open-report/save",data=currentUploadMsg,verify=not DEBUG)
             if result.json()['e']==0:
                 print("上报成功")
                 return 1
