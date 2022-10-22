@@ -217,54 +217,11 @@ BAK_UPLOAD_MSG={
 }
 
 # 上报哪个信息
-uploadMsgs=[NORTH_UPLOAD_MSG,SOUTH_UPLOAD_MSG,GZ_UPLOAD_MSG,HZ_UPLOAD_MSG,BAK_UPLOAD_MSG]
+uploadMsgs=(NORTH_UPLOAD_MSG,SOUTH_UPLOAD_MSG,GZ_UPLOAD_MSG,HZ_UPLOAD_MSG,BAK_UPLOAD_MSG)
 currentUploadMsg=uploadMsgs[LOCATION]
 
-# 定义程序上报的时间，初始值为 7:15，12:05，18:10
-time_lib=[7,15,12,5,18,10]
-
-# 获取当前时间
-def getCurrentTime():
-    currentTime=datetime.now()
-    hour=int(str(currentTime)[11:13])
-    minute=int(str(currentTime)[14:16])
-    second=int(str(currentTime)[17:19])
-    return hour,minute,second
-
-# 随机更新下一天上报时间
-def updateTimeLib(time_lib):
-    assert len(time_lib)==6
-    new_time=time_lib
-    new_time[1]=randint(2,59)
-    new_time[3]=randint(2,59)
-    new_time[5]=randint(2,59)
-    print("更新晨午晚检上报时间成功！下一天自动上报的时间为:")
-    print("晨检%02d时%02d分，午检%02d时%02d分，晚检%02d时%02d分" % tuple(new_time))
-    return new_time
-
-# 判断当前是否需要上报
-def checkTime(time_lib):
-    currentHour,currentMinute,currentSecond=getCurrentTime()
-    if currentHour==time_lib[0] and currentMinute==time_lib[1]:
-        # 晨检
-        currentState=1
-    elif currentHour==time_lib[2] and currentMinute==time_lib[3]:
-        # 午检
-        currentState=2
-    elif currentHour==time_lib[4] and currentMinute==time_lib[5]:
-        # 晚检
-        currentState=3
-    elif currentHour==23 and currentMinute==55:
-        # 夜间模式
-        currentState=4
-    elif not currentMinute:
-        # 整点时刻
-        currentState=5
-    else:
-        currentState=0
-    if currentState:
-        print("当前系统时间 %02d:%02d:%02d"%(currentHour,currentMinute,currentSecond))
-    return currentState
+# 定义程序上报的时间，初始值为 8:30，12:30，18:30
+timeLib=(8,30,12,30,18,30)
 
 # 登录
 conn=Session()
@@ -280,6 +237,7 @@ for i in range(3):
         print("登录失败：",result.json()['m'])
     except:
         print("登录失败：异常")
+    sleep(60)
 if not logined:
     print("登录失败，正在退出")
     exit()
@@ -287,43 +245,41 @@ if not logined:
 # 上报晨午晚检
 def dailyUp():
     result=None
-    try:
-        result=conn.post(url="https://xxcapp.xidian.edu.cn/xisuncov/wap/open-report/save",data=currentUploadMsg,verify=not DEBUG)
-        if result.json()['e']==0:
-            print("上报成功")
-            return 1
-        elif result.json()['m']=="您已上报过":
+    for i in range(3):
+        try:
+            result=conn.post(url="https://xxcapp.xidian.edu.cn/ncov/wap/default/save",data=currentUploadMsg,verify=not DEBUG)
+            if result.json()['e']==0:
+                print("上报成功")
+                return 1
+            elif result.json()['m']=="您已上报过":
                 print("已上报过")
                 return 2
-    except:
-        pass
-    print("上报失败")
+            print("填报失败")
+        except:
+            pass
+        sleep(60)
+    print("连续三次填报失败")
     return 0
 
-# 登录后立即上报一次
-success=dailyUp()
+# 运行后立即尝试上报
+dailyUp()
 
 while True:
-    currentState=checkTime(time_lib)
-    # 晨、午、晚上报，上报失败则重试两次
-    if currentState in (1,2,3):
-        if dailyUp()==0:
-            sleep(90)
-            if dailyUp()==0:
-                sleep(180)
-                if dailyUp()==0:
-                    print("连续三次上报失败")
-    # 上报结束后冷却时间
-        sleep(180)
-    elif currentState==4:
-        # 每天23点55分，更新下一天上报的随机时刻
-        time_lib=updateTimeLib(time_lib)
-        print("程序夜间进入休眠")
-        # 夜间暂停6小时
-        sleep(6*60*60)
-        print("早上好")
-    elif currentState==5:
-        # 整点报时
-        sleep(60)
+    currentTime=datetime.now()
+    currentHour,currentMinute=int(str(currentTime)[11:13]),int(str(currentTime)[14:16])
+    # 晨午晚检上报
+    if (currentHour,currentMinute)==(timeLib[0],timeLib[1]):
+        print("今天是%02d年%02d月%02d日"%(str(currentTime)[0:4],str(currentTime)[5:7],str(currentTime)[8:10]))
+        dailyUp()
+        sleep(-300+3600*timeLib[2]+60*timeLib[3]-3600*timeLib[0]-60*timeLib[1])
+    elif (currentHour,currentMinute)==(timeLib[2],timeLib[3]):
+        dailyUp()
+        sleep(-300+3600*timeLib[4]+60*timeLib[5]-3600*timeLib[2]-60*timeLib[3])
+    elif (currentHour,currentMinute)==(timeLib[4],timeLib[5]):
+        dailyUp()
+        timeLib[1],timeLib[3],timeLib[5]=randint(10,50),randint(10,50),randint(10,50)
+        print("更新核酸检测情况上报时间成功！下一天上报的时间为:%02d时%02d分、%02d时%02d分、%02d时%02d分"%timeLib)
+        sleep(86100+3600*timeLib[0]+60*timeLib[1]-3600*timeLib[4]-60*timeLib[5])
+        print()
     else:
-        sleep(30)
+        sleep(50)
