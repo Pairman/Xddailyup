@@ -52,7 +52,7 @@ opts=getopt(argv[1:],"hu:p:l:d",["help","username=","password=","location=","deb
 
 USERNAME,PASSWORD,LOCATION,DEBUG="","",1,False
 
-helpMsg="""Xddailyup - 西安电子科技大学晨午晚检自动上报工具 2.2 (2022 Oct 22, Pairman)
+helpMsg="""Xddailyup - 西安电子科技大学晨午晚检自动上报工具 2.3 (2022 Oct 23, Pairman)
 本程序仅供学习交流使用，使用本程序造成的任何后果由用户自行负责。
 用法：
     python3 %s [参数]
@@ -269,7 +269,7 @@ while True:
     currentHour,currentMinute=int(str(currentTime)[11:13]),int(str(currentTime)[14:16])
     # 晨午晚检上报
     if (currentHour,currentMinute)==(timeLib[0],timeLib[1]):
-        print("今天是%02d年%02d月%02d日"%(str(currentTime)[0:4],str(currentTime)[5:7],str(currentTime)[8:10]))
+        print("今天是%s年%s月%s日"%(str(currentTime)[0:4],str(currentTime)[5:7],str(currentTime)[8:10]))
         dailyUp()
         sleep(-300+3600*timeLib[2]+60*timeLib[3]-3600*timeLib[0]-60*timeLib[1])
     elif (currentHour,currentMinute)==(timeLib[2],timeLib[3]):
