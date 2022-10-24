@@ -52,7 +52,7 @@ opts=getopt(argv[1:],"hu:p:l:d",["help","username=","password=","location=","deb
 
 USERNAME,PASSWORD,LOCATION,DEBUG="","",1,False
 
-helpMsg="""Xddailyup - 西安电子科技大学晨午晚检自动上报工具 2.4 (2022 Oct 23, Pairman)
+helpMsg="""Xddailyup - 西安电子科技大学晨午晚检自动上报工具 2.5 (2022 Oct 24, Pairman)
 本程序仅供学习交流使用，使用本程序造成的任何后果由用户自行负责。
 用法：
     python3 %s [参数]
@@ -221,7 +221,7 @@ uploadMsgs=(NORTH_UPLOAD_MSG,SOUTH_UPLOAD_MSG,GZ_UPLOAD_MSG,HZ_UPLOAD_MSG,BAK_UP
 currentUploadMsg=uploadMsgs[LOCATION]
 
 # 定义程序上报的时间，初始值为 8:30，12:30，18:30
-timeLib=(8,30,12,30,18,30)
+timeLib=[8,30,12,30,18,30]
 
 # 登录
 conn=Session()
