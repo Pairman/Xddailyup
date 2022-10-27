@@ -282,6 +282,5 @@ while True:
         timeLib[1],timeLib[3],timeLib[5]=randint(10,50),randint(10,50),randint(10,50)
         print("更新核酸检测情况上报时间成功！下一天上报的时间为:%02d时%02d分、%02d时%02d分、%02d时%02d分"%tuple(timeLib))
         sleep(86100+3600*timeLib[0]+60*timeLib[1]-3600*timeLib[4]-60*timeLib[5])
-        print()
     else:
         sleep(50)
