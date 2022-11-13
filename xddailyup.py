@@ -52,7 +52,7 @@ opts=getopt(argv[1:],"hu:p:l:d",["help","username=","password=","location=","deb
 
 USERNAME,PASSWORD,LOCATION,DEBUG="","",1,False
 
-helpMsg="""Xddailyup - 西安电子科技大学晨午晚检自动上报工具 3.0 (2022 Nov 6, Pairman)
+helpMsg="""Xddailyup - 西安电子科技大学晨午晚检自动上报工具 3.1 (2022 Nov 13, Pairman)
 本程序仅供学习交流使用，使用本程序造成的任何后果由用户自行负责。
 用法：
     python3 %s [参数]
@@ -273,15 +273,15 @@ while True:
     if (currentHour,currentMinute)==(timeLib[0],timeLib[1]):
         print("今天是%s年%s月%s日"%(str(currentTime)[0:4],str(currentTime)[5:7],str(currentTime)[8:10]))
         dailyUp()
-        sleep(-300+3600*timeLib[2]+60*timeLib[3]-3600*timeLib[0]-60*timeLib[1])
+        sleep(-60+3600*timeLib[2]+60*timeLib[3]-3600*timeLib[0]-60*timeLib[1])
     elif (currentHour,currentMinute)==(timeLib[2],timeLib[3]):
         dailyUp()
-        sleep(-300+3600*timeLib[4]+60*timeLib[5]-3600*timeLib[2]-60*timeLib[3])
+        sleep(-60+3600*timeLib[4]+60*timeLib[5]-3600*timeLib[2]-60*timeLib[3])
     elif (currentHour,currentMinute)==(timeLib[4],timeLib[5]):
         dailyUp()
         prviousTimeLib=timeLib
         timeLib[1],timeLib[3],timeLib[5]=randint(10,50),randint(10,50),randint(10,50)
         print("更新晨午晚检上报时间成功！下一天上报的时间为:%02d时%02d分、%02d时%02d分、%02d时%02d分"%tuple(timeLib))
-        sleep(86100+3600*timeLib[0]+60*timeLib[1]-3600*prviousTimeLib[4]-60*prviousTimeLib[5])
+        sleep(86340+3600*timeLib[0]+60*timeLib[1]-3600*currentHour-60*currentMinute)
     else:
-        sleep(50)
+        sleep(55)
