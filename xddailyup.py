@@ -17,12 +17,12 @@
 
 ```
 用法：
-    python3 xddailyup.py [参数]
+    python3 %s [参数]
 参数：
     -h,--help                   输出帮助信息
     -u,--username <学号>        指定学号
     -p,--password <密码>        指定密码
-    -l,--location <上报地址>    指定上报地址（格式：某国某省某市某县/区）
+    -l,--location <上报地址>    指定上报地址（0：北校区，1：南校区，2：广州研究院 (测试)，3：杭州研究院 (预留)，4：备用(出差)，默认为1）
     -d,--debug                  进入调试模式
 ```
 
@@ -52,7 +52,7 @@ opts=getopt(argv[1:],"hu:p:l:d",["help","username=","password=","location=","deb
 
 USERNAME,PASSWORD,LOCATION,DEBUG="","",1,False
 
-helpMsg="""Xddailyup - 西安电子科技大学晨午晚检自动上报工具 3.1 (2022 Nov 13, Pairman)
+helpMsg="""Xddailyup - 西安电子科技大学晨午晚检自动上报工具 3.2 (2022 Nov 19, Pairman)
 本程序仅供学习交流使用，使用本程序造成的任何后果由用户自行负责。
 用法：
     python3 %s [参数]
